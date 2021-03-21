@@ -8,11 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
-   // protected $fillable =['title', 'excerpt', 'body'];
-    protected $guarded =[];
+    // protected $fillable =['title', 'excerpt', 'body'];
+    protected $guarded = [];
 
     public function path()
     {
         return route('articles.show', $this);
+    }
+    public function author()
+    {
+        return $this->belongsTo(User::class, "user_id");
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(tag::class)->withTimestamps();
     }
 }

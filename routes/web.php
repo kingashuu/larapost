@@ -18,7 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/about', function () {
-    return view('about' ,['articles'=> App\Models\article::take(3)->latest()->get()]);
+    return view('about', ['articles' => App\Models\article::take(3)->latest()->get()]);
+});
+Route::get('/teste', function () {
+    return view('teste');
 });
 
 Route::get('/articles', [ArticlesController::class, 'index'])->name('articels.index');

@@ -6,7 +6,6 @@
 
 @section('content')
 
-
 <div id="wrapper">
     <div id="page" class="container">
         <h1 class="title is-1">Update Article</h1>
@@ -50,6 +49,24 @@
                 @enderror
 
             </div>
+            <div class="field">
+                <label class="label" for="tags">Tags</label>
+
+                <div class="select is-multiple">
+                    <select multiple name="tags[]">
+                        @foreach($tags as $tag)
+                        <option value="{{$tag->id}}">{{$tag->name}}</option>
+                        @endforeach
+
+                    </select>
+                    @error('tags')
+                    <p class="help is-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
+            </div>
+
             <div class="field is-grouped">
                 <div class="control">
                     <button class="button is-link">Submit</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class ArticlesController extends Controller
@@ -14,8 +15,14 @@ class ArticlesController extends Controller
      */
     public function index()
     {
-        $articles = Article::latest()->get();
-        return view('articles.index',['articles'=>$articles]);
+        if (request('tag')) {
+            //tgs
+            $articles = Tag::where('name', request('tag'))->firstOrFail()->articles;
+        } else {
+
+            $articles = Article::latest()->get();
+        }
+        return view('articles.index', ['articles' => $articles]);
     }
 
     /**
@@ -25,7 +32,10 @@ class ArticlesController extends Controller
      */
     public function create()
     {
-        return view('articles.create');
+
+        return view('articles.create', [
+            'tags' => Tag::all()
+        ]);
     }
 
     /**
@@ -36,10 +46,16 @@ class ArticlesController extends Controller
      */
     public function store(Request $request)
     {
-        Article::create($this->ValidateArticle());
+        // Article::create($this->ValidateArticle());
+        $this->ValidateArticle();
 
-        return redirect(route('articles.index'));
+        $article = new Article(request(['title', 'excerpt', 'body']));
+        $article->user_id = 1;
+        $article->save();
 
+        $article->tags()->attach(request('tags'));
+
+        return redirect($article->path());
     }
 
     /**
@@ -51,8 +67,7 @@ class ArticlesController extends Controller
     public function show(Article $article)
     {
 
-        return view('articles.show', ['article'=> $article]);
-
+        return view('articles.show', ['article' => $article]);
     }
 
     /**
@@ -63,7 +78,11 @@ class ArticlesController extends Controller
      */
     public function edit(Article $article)
     {
-        return view('articles.edit', compact('article'));
+        return view(
+            'articles.edit',
+            compact('article'),
+            ['tags' => Tag::all()]
+        );
     }
 
     /**
@@ -99,7 +118,8 @@ class ArticlesController extends Controller
         return request()->validate([
             'title' => 'required',
             'excerpt' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'tags' => 'exists:tags,id'
         ]);
     }
 }
